@@ -183,35 +183,24 @@ if __name__ == "__main__":
 
 
     # Convert inputs to PyTorch tensors and define them as needed
-    # Example usage
-    object_points1 = torch.tensor(np.load('./hyper_sl/utils/test_2024_04_02_20_57_30ms_depth.npy'),  dtype = torch.float64).reshape(-1, 3)
-    distortion_camera = torch.tensor(loadmat('./hyper_sl/utils/distortion_camera1.mat')['distortion'], dtype = torch.float64).squeeze()
-    intrinsic_camera = torch.tensor(loadmat('./hyper_sl/utils/intrinsic_camera1.mat')['K'], dtype = torch.float64)
-
     object_points = torch.tensor([[1.0, 1.0, 1.0], [2.0, 2.0, 1.0]], dtype=torch.float64)
     rvec = torch.tensor([[0.0, 0.0, 0.0]], dtype=torch.float64).T  # Rotation vector as column vector
     tvec = torch.tensor([[0.0, 0.0, 0.0]], dtype=torch.float64).T  # Translation vector as column vector
-    # camera_matrix = torch.tensor([[800.0, 0.0, 320.0], [0.0, 800.0, 240.0], [0.0, 0.0, 1.0]], dtype=torch.float64)
-    # dist_coeffs = torch.tensor([-0.2, 0.03, 0.0, 0.0, 0.0], dtype=torch.float64)
+    camera_matrix = torch.tensor([[800.0, 0.0, 320.0], [0.0, 800.0, 240.0], [0.0, 0.0, 1.0]], dtype=torch.float64)
+    dist_coeffs = torch.tensor([-0.2, 0.03, 0.0, 0.0, 0.0], dtype=torch.float64)
 
-    projected_points = projectPoints(object_points1, rvec, tvec, intrinsic_camera, distortion_camera)
-    # projected_points = projectPoints(object_points, rvec, tvec, camera_matrix, dist_coeffs)
+    projected_points = projectPoints(object_points, rvec, tvec, camera_matrix, dist_coeffs)
     print("Projected Points:\n", projected_points)
 
     # Ensure inputs are in homogeneous coordinates for OpenCV as well
     object_points = np.array([[1, 1, 1], [2, 2, 1]], dtype=np.float64)
     rvec = np.array([[0, 0, 0.0]], dtype=np.float64).T
     tvec = np.array([[0, 0, 0]], dtype=np.float64).T
-    # camera_matrix = np.array([[800, 0, 320], [0, 800, 240], [0, 0, 1]], dtype=np.float64)
-    # dist_coeffs = np.array([-0.2, 0.03, 0, 0, 0], dtype=np.float64)
-
-    object_points1 = np.load('./hyper_sl/utils/test_2024_04_02_20_57_30ms_depth.npy').astype(np.float64)
-    distortion_camera = np.array(loadmat('./hyper_sl/utils/distortion_camera1.mat')['distortion'], dtype = np.float64).squeeze()
-    intrinsic_camera = np.array(loadmat('./hyper_sl/utils/intrinsic_camera1.mat')['K'], dtype = np.float64)
+    camera_matrix = np.array([[800, 0, 320], [0, 800, 240], [0, 0, 1]], dtype=np.float64)
+    dist_coeffs = np.array([-0.2, 0.03, 0, 0, 0], dtype=np.float64)
 
     # OpenCV projection for comparison, ensuring input points are 3D for projectPoints
-    projected_points_cv2, _ = cv2.projectPoints(object_points1.reshape(-1, 1, 3), rvec, tvec, intrinsic_camera, distortion_camera)
-    # projected_points_cv2, _ = cv2.projectPoints(object_points.reshape(-1, 1, 3), rvec, tvec, camera_matrix, dist_coeffs)
+    projected_points_cv2, _ = cv2.projectPoints(object_points.reshape(-1, 1, 3), rvec, tvec, camera_matrix, dist_coeffs)
     print("OpenCV Projected Points:\n", projected_points_cv2.reshape(-1, 2))
 
 
